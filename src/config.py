@@ -978,7 +978,24 @@ class Config:
         if cls._instance is None:
             cls._instance = cls._load_from_env()
         return cls._instance
-    
+
+    @staticmethod
+    def _load_stock_list_from_file(stock_list_file: str = "stock_list.txt"):
+        """从 stock_list.txt 文件读取自选股列表（支持 # 注释和空行）"""
+        stock_list_path = Path(stock_list_file)
+        if not stock_list_path.exists():
+            return []
+
+        try:
+            with open(stock_list_path, 'r', encoding='utf-8') as f:
+                return [
+                    line.strip().upper()
+                    for line in f
+                    if (stripped := line.strip()) and not stripped.startswith('#')
+                ]
+        except OSError:
+            return []
+
     @classmethod
     def _load_from_env(cls) -> 'Config':
         """
@@ -2467,22 +2484,6 @@ def get_config() -> Config:
     """获取全局配置实例的快捷方式"""
     return Config.get_instance()
 
-@staticmethod
-def _load_stock_list_from_file(stock_list_file: str = "stock_list.txt") -> List[str]:
-    """从 stock_list.txt 文件读取自选股列表（支持 # 注释和空行）"""
-    stock_list_path = Path(stock_list_file)
-    if not stock_list_path.exists():
-        return []
-
-    try:
-        with open(stock_list_path, 'r', encoding='utf-8') as f:
-            return [
-                line.strip().upper()
-                for line in f
-                if (stripped := line.strip()) and not stripped.startswith('#')
-            ]
-    except OSError:
-        return []
 
 # ============================================================
 # Shared LLM helpers (used by both analyzer and agent/llm_adapter)
