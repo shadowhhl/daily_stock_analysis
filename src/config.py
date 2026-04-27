@@ -1037,19 +1037,23 @@ class Config:
                 os.environ['https_proxy'] = https_proxy
 
         
-        # 解析自选股列表（逗号分隔，统一为大写 Issue #355）
-        stock_list_str = cls._resolve_env_value(
-            'STOCK_LIST',
-            default='',
-            prefer_env_file=True,
-        )
-        stock_list = [
-            (c or "").strip().upper()
-            for c in stock_list_str.split(',')
-            if (c or "").strip()
-        ]
-        
-        # 如果没有配置，使用默认的示例股票
+        # 解析自选股列表（优先级：stock_list.txt > STOCK_LIST 环境变量 > 默认值）
+        stock_list = cls._load_stock_list_from_file()
+
+        # 如果文件不存在或为空，回退到环境变量
+        if not stock_list:
+            stock_list_str = cls._resolve_env_value(
+                'STOCK_LIST',
+                default='',
+                prefer_env_file=True,
+            )
+            stock_list = [
+                (c or "").strip().upper()
+                for c in stock_list_str.split(',')
+                if (c or "").strip()
+            ]
+
+        # 如果还是没有，使用默认值
         if not stock_list:
             stock_list = ['600519', '000001', '300750']
         
