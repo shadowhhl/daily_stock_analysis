@@ -259,7 +259,9 @@ jobs:
           # ==========================================
           # 自选股配置
           # ==========================================
-          STOCK_LIST: ${{ vars.STOCK_LIST || secrets.STOCK_LIST || '600519' }}
+          # 自选股已迁移到仓库根目录 stock_list.txt 文件维护
+          # STOCK_LIST 仅作为备用覆盖，无需在 Secrets 中配置
+          STOCK_LIST: ${{ vars.STOCK_LIST || secrets.STOCK_LIST }}
           MARKET_REVIEW_REGION: ${{ vars.MARKET_REVIEW_REGION || secrets.MARKET_REVIEW_REGION || 'cn' }}
           
           # ==========================================
